@@ -25,7 +25,7 @@ fun SmartLearningApp() {
     val sessionStore = remember { SessionStore(context) }
     val repository = remember {
         CourseRepository(
-            api = MockCourseApi(),
+            api = MockCourseApi(context),
             localDataSource = SharedPreferencesCourseCache(context)
         )
     }
@@ -43,7 +43,7 @@ fun SmartLearningApp() {
 
     LaunchedEffect(route) {
         if (route == AppRoute.Dashboard && coursesViewModel.uiState.courses.isEmpty()) {
-            coursesViewModel.loadCourses(forceRefresh = true)
+            coursesViewModel.loadCourses()
         }
     }
 

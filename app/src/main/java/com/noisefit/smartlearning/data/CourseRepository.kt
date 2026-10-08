@@ -20,8 +20,9 @@ class CourseRepository(
             api.fetchCourses(simulateFailure = simulateFailure)
         }.fold(
             onSuccess = { courses ->
-                localDataSource.writeCourses(courses)
-                CourseLoadResult.Success(courses, fromCache = false)
+                val mergedCourses = courses.withLocalProgress(cachedCourses)
+                localDataSource.writeCourses(mergedCourses)
+                CourseLoadResult.Success(mergedCourses, fromCache = false)
             },
             onFailure = {
                 if (cachedCourses.isNotEmpty()) {
@@ -48,6 +49,27 @@ class CourseRepository(
 
         localDataSource.writeCourses(updatedCourses)
         return updatedCourses
+    }
+
+    private fun List<Course>.withLocalProgress(cachedCourses: List<Course>): List<Course> {
+        if (cachedCourses.isEmpty()) return this
+
+        val cachedByCourseId = cachedCourses.associateBy { it.id }
+        return map { remoteCourse ->
+            val cachedCourse = cachedByCourseId[remoteCourse.id] ?: return@map remoteCourse
+            val cachedLessonsById = cachedCourse.lessons.associateBy { it.id }
+
+            remoteCourse.copy(
+                lessons = remoteCourse.lessons.map { remoteLesson ->
+                    val cachedLesson = cachedLessonsById[remoteLesson.id]
+                    if (cachedLesson?.completed == true) {
+                        remoteLesson.copy(completed = true)
+                    } else {
+                        remoteLesson
+                    }
+                }
+            )
+        }
     }
 }
 

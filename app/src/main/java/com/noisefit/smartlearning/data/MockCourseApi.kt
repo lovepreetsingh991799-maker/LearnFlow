@@ -1,14 +1,19 @@
 package com.noisefit.smartlearning.data
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import com.noisefit.smartlearning.domain.Course
 import com.noisefit.smartlearning.domain.Lesson
 import kotlinx.coroutines.delay
 
-class MockCourseApi : CourseApi {
+class MockCourseApi(
+    private val context: Context? = null
+) : CourseApi {
     override suspend fun fetchCourses(simulateFailure: Boolean): List<Course> {
         delay(NETWORK_DELAY_MS)
 
-        if (simulateFailure) {
+        if (simulateFailure || context?.isInternetAvailable() == false) {
             error("Mock API failure")
         }
 
@@ -182,4 +187,14 @@ class MockCourseApi : CourseApi {
     private companion object {
         const val NETWORK_DELAY_MS = 800L
     }
+}
+
+private fun Context.isInternetAvailable(): Boolean {
+    val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        ?: return false
+    val activeNetwork = connectivityManager.activeNetwork ?: return false
+    val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+
+    return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
 }
