@@ -1,3 +1,14 @@
+# App Video and Screenshot
+
+https://github.com/user-attachments/assets/7ced5d8d-5b94-471d-9492-5846a214c9a5
+
+<img width="540" height="1200" alt="screenshot_1" src="https://github.com/user-attachments/assets/6b51b55c-d7fe-4226-9c1e-74a19fedf29e" />
+
+<img width="540" height="1200" alt="screenshot_2" src="https://github.com/user-attachments/assets/1d13b035-217b-4cc2-9d8a-7376e48cbff4" />
+
+<img width="540" height="1200" alt="screenshot_3" src="https://github.com/user-attachments/assets/8c47ef18-b19b-4fb6-b205-bbebd97ee494" />
+
+
 # LearnFlow
 
 Small Android learning dashboard built with Kotlin and Jetpack Compose for the mobile developer assignment.
